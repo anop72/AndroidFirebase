@@ -19,8 +19,9 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layout = (LinearLayout) findViewById(R.id.list);
         send.setOnClickListener(this);
         firebase = new Firebase("https://androidak01.firebaseio.com/msg");
-        firebase.orderByKey().addValueEventListener(new ValueEventListener() {
+        firebase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 System.out.println(snapshot.getValue());
@@ -48,19 +49,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (snapshot.exists()) {
                     try {
                         if (snapshot.getValue() instanceof HashMap) {
-                            Map<String, Object>  mp = (Map<String, Object>) snapshot.getValue();
-                            Iterator it = mp.entrySet().iterator();
-                            while (it.hasNext()) {
-                                Map.Entry pair = (Map.Entry)it.next();
-                                System.out.println(pair.getKey() + " = " + pair.getValue());
-                                layout.addView(createTextView((String) pair.getValue()));
+                            Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
+                            SortedSet<String> keys = new TreeSet<String>(map.keySet());
+                            for (String key : keys) {
+                                String value = (String) map.get(key);
+                                // do something
+                                System.out.println(value);
+                                layout.addView(createTextView(value));
                             }
                         }
-                        layout.invalidate();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
+                layout.postInvalidate();
+                message.setText(null);
             }
 
             @Override
