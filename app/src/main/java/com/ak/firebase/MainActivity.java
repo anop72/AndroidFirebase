@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layout = (LinearLayout) findViewById(R.id.list);
         send.setOnClickListener(this);
         firebase = new Firebase("https://androidak01.firebaseio.com/msg");
+        firebase.keepSynced(true);
         firebase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             SortedSet<String> keys = new TreeSet<String>(map.keySet());
                             for (String key : keys) {
                                 String value = (String) map.get(key);
-                                // do something
                                 System.out.println(value);
                                 layout.addView(createTextView(value));
                             }
